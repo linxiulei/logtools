@@ -33,3 +33,17 @@ func (*analyzerPlugin) GetAnalyzers() []*analysis.Analyzer {
 
 // AnalyzerPlugin is the entry point for golangci-lint.
 var AnalyzerPlugin analyzerPlugin
+
+// New is the enry point for golangci-lint, which takes priority over AnalyzerPlugin.
+func New(conf any) []*analysis.Analyzer {
+	a := pkg.Analyser()
+	conf, ok := conf.(map[string]any)
+	if !ok {
+		return []*analysis.Analyzer{a}
+	}
+
+	if config, ok := conf["config"]; ok {
+		a.Flags.Set("config", config)
+	}
+	return []*analysis.Analyzer{a}
+}
